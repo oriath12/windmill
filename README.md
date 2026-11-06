@@ -26,18 +26,6 @@ The purifier fan exposes four manual speeds as percentages: **Low 25%**, **Mediu
 
 Home Assistant **2026.11 and newer** includes the Marketplace under **Settings → Marketplace**. Earlier versions use HACS as a separate custom integration.
 
-## Publish your GitHub repository
-
-The release archive has the required repository layout: `hacs.json` and `README.md` at the root, with the integration in `custom_components/windmillac/`.
-
-1. Create a **public** GitHub repository, for example `WindmillAir`.
-2. Upload the extracted repository contents, including the hidden `.github` directory if you want the included validation workflows.
-3. Replace `YOUR_GITHUB_USERNAME` in `custom_components/windmillac/manifest.json` with your GitHub username. This updates the documentation and issue-tracker links.
-4. Commit and push the files to the repository’s default branch.
-5. Optionally create a GitHub release tagged `v1.1.0` so users can select a numbered release.
-
-Do not publish device tokens, account passwords, dashboard screenshots containing personal information, or unsanitized API logs. The integration and capture tool do not need your Windmill account password.
-
 ## Install on Home Assistant 2026.11 or newer
 
 1. Open **Settings → Marketplace**.
