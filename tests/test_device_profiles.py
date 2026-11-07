@@ -103,14 +103,16 @@ class PurifierStateTests(unittest.TestCase):
                 self.assertEqual(state.parse_purifier_mode(mode), mode)
                 self.assertEqual(state.purifier_mode_to_pin(mode), str(raw))
 
-    def test_sleep_styles_round_trip(self):
+    def test_sleep_styles_are_readable_but_only_whisper_is_writable(self):
         expected = {0: "Whisper", 1: "White Noise"}
         for raw, style in expected.items():
             with self.subTest(raw=raw, style=style):
                 self.assertEqual(state.parse_sleep_style(raw), style)
                 self.assertEqual(state.parse_sleep_style(style), style)
-                self.assertEqual(state.sleep_style_to_pin(style), str(raw))
         self.assertEqual(state.parse_sleep_style("white_noise"), "White Noise")
+        self.assertEqual(state.sleep_style_to_pin("Whisper"), "0")
+        with self.assertRaises(ValueError):
+            state.sleep_style_to_pin("White Noise")
 
     def test_unknown_values_are_not_misclassified(self):
         self.assertIsNone(state.parse_purifier_mode("White Noise"))

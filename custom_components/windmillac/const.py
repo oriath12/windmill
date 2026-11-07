@@ -6,7 +6,7 @@ LOGGER: Logger = getLogger(__package__)
 
 NAME = "Windmill Air"
 DOMAIN = "windmillac"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 PLATFORMS = ["climate", "fan", "sensor", "switch"]
 UPDATE_INTERVAL = 60
 REQUEST_TIMEOUT = 15
@@ -37,6 +37,5 @@ PURIFIER_MAX_PINS = {
 
 PURIFIER_MAX_MODEL = "Air Purifier Max"
 PURIFIER_MAX_SPEEDS = ("Low", "Medium", "High", "Boost")
-# Sleep always selects Whisper; White Noise is the alternate sleep style.
-PURIFIER_MAX_PRESETS = ("Eco", "Sleep", "White Noise")
-PURIFIER_MAX_SLEEP_STYLES = ("Whisper", "White Noise")
+# White Noise remains readable on V4 but is not exposed as a writable preset.
+PURIFIER_MAX_PRESETS = ("Eco", "Sleep")

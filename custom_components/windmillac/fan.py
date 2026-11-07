@@ -60,17 +60,12 @@ class WindmillPurifierFan(WindmillPurifierEntity, FanEntity):
             return None
         mode = self.coordinator.data.get("mode")
         if mode == "Sleep":
-            if self.coordinator.data.get("sleep_style") == "White Noise":
-                return "White Noise"
             return "Sleep"
         return "Eco" if mode == "Eco" else None
 
     async def _async_apply_mode(self, mode: str) -> None:
-        """Apply a manual speed or a main-mode/sleep-style combination."""
-        if mode == "White Noise":
-            await self.coordinator.blynk_service.async_set_purifier_mode("Sleep")
-            await self.coordinator.blynk_service.async_set_sleep_style("White Noise")
-        elif mode == "Sleep":
+        """Apply a manual speed, Eco, or Sleep with Whisper."""
+        if mode == "Sleep":
             await self.coordinator.blynk_service.async_set_purifier_mode("Sleep")
             await self.coordinator.blynk_service.async_set_sleep_style("Whisper")
         else:
@@ -92,7 +87,7 @@ class WindmillPurifierFan(WindmillPurifierEntity, FanEntity):
         await self._async_set_mode(mode)
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set Eco, Sleep/Whisper, or Sleep/White Noise mode."""
+        """Set Eco or Sleep with Whisper."""
         await self._async_set_mode(preset_mode)
 
     async def async_turn_on(

@@ -176,11 +176,11 @@ class FanEntityTests(unittest.TestCase):
                 self.assertEqual(fan.percentage, percentage)
                 self.assertIsNone(fan.preset_mode)
 
-    def test_eco_and_both_sleep_styles_are_presets(self):
+    def test_eco_and_sleep_are_presets(self):
         cases = (
             ("Eco", "Whisper", "Eco"),
             ("Sleep", "Whisper", "Sleep"),
-            ("Sleep", "White Noise", "White Noise"),
+            ("Sleep", "White Noise", "Sleep"),
         )
         for mode, sleep_style, preset in cases:
             with self.subTest(preset=preset):
@@ -206,19 +206,12 @@ class FanEntityTests(unittest.TestCase):
         self.assertEqual(coordinator.blynk_service.calls, [("mode", "Medium")])
         self.assertEqual(coordinator.refreshes, 1)
 
-    def test_white_noise_preset_powers_on_and_sets_both_pins(self):
-        coordinator = FakeCoordinator({"power": False, "mode": "Low"})
-        fan = fan_module.WindmillPurifierFan(coordinator)
-        asyncio.run(fan.async_set_preset_mode("White Noise"))
-        self.assertEqual(
-            coordinator.blynk_service.calls,
-            [
-                ("power", True),
-                ("mode", "Sleep"),
-                ("sleep_style", "White Noise"),
-            ],
+    def test_white_noise_is_not_offered_as_a_preset(self):
+        fan = fan_module.WindmillPurifierFan(
+            FakeCoordinator({"power": True, "mode": "Sleep"})
         )
-        self.assertEqual(coordinator.refreshes, 1)
+        self.assertEqual(fan._attr_preset_modes, ["Eco", "Sleep"])
+        self.assertNotIn("White Noise", fan._attr_preset_modes)
 
     def test_sleep_preset_selects_whisper(self):
         coordinator = FakeCoordinator(
@@ -247,16 +240,16 @@ class FanEntityTests(unittest.TestCase):
             coordinator.blynk_service.calls, [("power", True), ("mode", "Boost")]
         )
 
-    def test_turn_on_with_white_noise_preset(self):
+    def test_turn_on_with_sleep_preset_selects_whisper(self):
         coordinator = FakeCoordinator({"power": False, "mode": "Low"})
         fan = fan_module.WindmillPurifierFan(coordinator)
-        asyncio.run(fan.async_turn_on(preset_mode="White Noise"))
+        asyncio.run(fan.async_turn_on(preset_mode="Sleep"))
         self.assertEqual(
             coordinator.blynk_service.calls,
             [
                 ("power", True),
                 ("mode", "Sleep"),
-                ("sleep_style", "White Noise"),
+                ("sleep_style", "Whisper"),
             ],
         )
 

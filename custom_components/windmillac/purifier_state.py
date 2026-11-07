@@ -39,7 +39,9 @@ _SLEEP_STYLE_BY_VALUE = {
     "white noise": "White Noise",
     "whitenoise": "White Noise",
 }
-_VALUE_BY_SLEEP_STYLE = {"Whisper": "0", "White Noise": "1"}
+# V4=1 returned HTTP 200 but did not activate White Noise on the tested Max.
+# Keep parsing its read state, but only permit the verified Whisper write.
+_VALUE_BY_SLEEP_STYLE = {"Whisper": "0"}
 
 
 def device_identifier(token: str) -> str:

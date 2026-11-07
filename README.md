@@ -13,9 +13,9 @@ Add each physical device separately with its own auth token and device type.
 | Air conditioner | One `climate` entity with temperature, HVAC mode, fan mode, and power controls, preserving the upstream integration’s behavior |
 | Air Purifier Max | One `fan` entity; PM2.5, filter-life, qualitative air-quality, and optional Wi-Fi signal sensors; Child lock, Autofade, and Button sounds switches |
 
-The purifier fan exposes four manual speeds as percentages: **Low 25%**, **Medium 50%**, **High 75%**, and **Boost 100%**. Its presets are **Eco**, **Sleep** (Sleep with Whisper), and **White Noise** (Sleep with White Noise). The qualitative air-quality sensor reports labels such as `Good`; it is not presented as a numeric AQI measurement. The Wi-Fi signal sensor is disabled by default because its pin assignment is less certain than the primary controls.
+The purifier fan exposes four manual speeds as percentages: **Low 25%**, **Medium 50%**, **High 75%**, and **Boost 100%**. Its presets are **Eco** and **Sleep** (Sleep with Whisper). White Noise remains available in the official Windmill app but is not exposed by this integration because its inferred write command did not work on the tested purifier. If White Noise is selected in the app, Home Assistant reports the broader **Sleep** preset after its next poll. The qualitative air-quality sensor reports labels such as `Good`; it is not presented as a numeric AQI measurement. The Wi-Fi signal sensor is disabled by default because its pin assignment is less certain than the primary controls.
 
-> **Hardware-validation status:** The purifier’s read mappings were verified with token-free, read-only captures from an Air Purifier Max. The write commands use the corresponding Blynk integer keys inferred from those readings and Blynk’s enumerable-datastream contract, but they have not yet been exercised on the physical purifier. Perform the validation checklist below before relying on automations.
+> **Hardware-validation status:** The purifier’s read mappings were verified with token-free captures from an Air Purifier Max, and user testing confirmed the primary controls and switches. An isolated `V4=1` write returned HTTP 200 but never changed the settled state from Whisper to White Noise. Version 1.1.1 therefore removes White Noise as a writable option rather than sending a command known not to work. Sleep continues to select Whisper.
 
 ## Requirements
 
@@ -26,23 +26,11 @@ The purifier fan exposes four manual speeds as percentages: **Low 25%**, **Mediu
 
 Home Assistant **2026.11 and newer** includes the Marketplace under **Settings → Marketplace**. Earlier versions use HACS as a separate custom integration.
 
-## Publish your GitHub repository
-
-The release archive has the required repository layout: `hacs.json` and `README.md` at the root, with the integration in `custom_components/windmillac/`.
-
-1. Create a **public** GitHub repository, for example `WindmillAir`.
-2. Upload the extracted repository contents, including the hidden `.github` directory if you want the included validation workflows.
-3. Replace `YOUR_GITHUB_USERNAME` in `custom_components/windmillac/manifest.json` with your GitHub username. This updates the documentation and issue-tracker links.
-4. Commit and push the files to the repository’s default branch.
-5. Optionally create a GitHub release tagged `v1.1.0` so users can select a numbered release.
-
-Do not publish device tokens, account passwords, dashboard screenshots containing personal information, or unsanitized API logs. The integration and capture tool do not need your Windmill account password.
-
 ## Install on Home Assistant 2026.11 or newer
 
 1. Open **Settings → Marketplace**.
 2. Select **Add from link** in the upper-right corner.
-3. Enter your full repository URL, such as `https://github.com/YOUR_GITHUB_USERNAME/WindmillAir`.
+3. Enter `https://github.com/oriath12/windmill`.
 4. Select **Add**. If Home Assistant asks for a type, choose **Integration**. A GitHub connection may be requested for a custom repository.
 5. Open the repository in the Marketplace and select **Install**.
 6. If you replaced an existing copy of `windmillac`, restart Home Assistant before configuring devices so the updated code is loaded.
@@ -85,7 +73,6 @@ Test these actions manually while watching both Home Assistant and the Windmill 
 - [ ] Low, Medium, High, and Boost; confirm 25/50/75/100% maps to the correct physical speed.
 - [ ] Eco.
 - [ ] Sleep; confirm Sleep with Whisper is selected.
-- [ ] White Noise; confirm the device remains in Sleep but selects White Noise.
 - [ ] Child lock on and off.
 - [ ] Autofade on and off.
 - [ ] Button sounds on and off.
@@ -120,7 +107,7 @@ python3 -m unittest discover -s tests -v
 python3 -m compileall -q custom_components/windmillac tests
 ```
 
-They cover legacy A/C reads, capture-derived purifier reads, all main modes, both sleep styles, sensor values, switch writes, fan percentages, platform isolation, integer-enum writes, request timeouts, and token-safe logging. Passing these tests is not a substitute for the physical write-test checklist.
+They cover legacy A/C reads, capture-derived purifier reads, all main modes, read parsing for both sleep styles, rejection of the unverified White Noise write, sensor values, switch writes, fan percentages, Eco/Sleep presets, platform isolation, integer-enum writes, request timeouts, and token-safe logging. Passing these tests is not a substitute for physical validation.
 
 ## Research and attribution
 

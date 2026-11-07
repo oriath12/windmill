@@ -200,12 +200,12 @@ class BlynkServiceLoggingTests(unittest.TestCase):
             urls.append(url) or types.SimpleNamespace(status_code=200, text="ok")
         )
         asyncio.run(service.async_set_purifier_mode("Sleep"))
-        asyncio.run(service.async_set_sleep_style("White Noise"))
+        asyncio.run(service.async_set_sleep_style("Whisper"))
         self.assertEqual(
             urls,
             [
                 f"https://dashboard.windmillair.com/external/api/update?token={TOKEN}&V2=6",
-                f"https://dashboard.windmillair.com/external/api/update?token={TOKEN}&V4=1",
+                f"https://dashboard.windmillair.com/external/api/update?token={TOKEN}&V4=0",
             ],
         )
         self.assertFalse(any(TOKEN in message for message in self._messages()))

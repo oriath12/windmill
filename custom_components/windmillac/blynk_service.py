@@ -160,7 +160,7 @@ class BlynkService:
         await self.async_set_pin_value(pin, value)
 
     async def async_set_sleep_style(self, style):
-        """Select Whisper or White Noise on the purifier's V4 enum."""
+        """Select a supported sleep style; currently only Whisper is writable."""
         pin = PURIFIER_MAX_PINS["sleep_style"]
         value = sleep_style_to_pin(style)
         _LOGGER.debug("Setting sleep style %s to pin %s value %s", style, pin, value)
